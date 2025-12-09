@@ -3,9 +3,17 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import streamlit as st
 
-# Load environment variables from .env (for local use)
+# Local: load from .env
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Try Streamlit secrets first (for cloud), fall back to env var (for local)
+api_key = None
+if "OPENAI_API_KEY" in st.secrets:
+    api_key = st.secrets["OPENAI_API_KEY"]
+else:
+    api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=api_key)
 
 BASE_SYSTEM_PROMPT = """
 You are AdBrain, a senior performance marketer and advertising strategist.
